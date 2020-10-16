@@ -73,15 +73,16 @@ info_user(old_data)
 
 # When was this object timestamped?
 info_time(old_data)
-#> [1] "2020-10-16 16:30:24 CEST"
+#> [1] "2020-10-16 16:51:35 CEST"
 
 # What script was used to generate the results?
-info_script(old_data)
-#> [1] "/DATA/users/t.vd.brand/packages/01_active/datastamp/README.Rmd"
+# The `basename()` is just so you don't have to see my messy folder structures!
+basename(info_script(old_data))
+#> [1] "README.Rmd"
 
 # What raw files went into these results?
-info_files(old_data)
-#> [1] "/home/t.vd.brand/R/x86_64-pc-linux-gnu-library/3.6/datastamp/extdata/loremipsum.txt"
+basename(info_files(old_data))
+#> [1] "loremipsum.txt"
 ```
 
 ## How does it work?
@@ -107,7 +108,7 @@ stamp <- get_stamp(old_data)
 
 # The stamp itself is also a list, so you can retrieve information by name
 stamp$time
-#> [1] "2020-10-16 16:30:24 CEST"
+#> [1] "2020-10-16 16:51:35 CEST"
 ```
 
 If you think some parts of the datastamp aren’t necessary to include you
