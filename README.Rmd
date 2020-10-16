@@ -1,0 +1,111 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# datastamp
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Codecov test coverage](https://codecov.io/gh/teunbrand/datastamp/branch/master/graph/badge.svg)](https://codecov.io/gh/teunbrand/datastamp?branch=master)
+[![Travis build status](https://travis-ci.com/teunbrand/datastamp.svg?branch=master)](https://travis-ci.com/teunbrand/datastamp)
+<!-- badges: end -->
+
+The goal of datastamp is to make it easy to attach some metadata to R objects. This can be convenient if you want to make `.RData` or `.rds` objects self-documenting, by attaching time of creation or the path to the script used to generate the data.
+
+The package has basic functionality but isn't fine-tuned to handle any type of data one might want to document in R.
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("teunbrand/datastamp")
+```
+
+## Example
+
+This is a basic example which shows you how you would use the datastamp package at the end of an analysis.
+
+```{r example}
+# Library statements
+library(datastamp)
+
+# Declare files
+input_file  <- system.file("extdata", "loremipsum.txt", package = "datastamp")
+output_file <- tempfile("important_results", fileext = ".rds")
+
+# Load data
+data <- readLines(input_file)
+
+# Start very complicated analysis
+result <- toupper(data)
+
+# Saving results
+saveRDS(
+  stamp(result, origin_files = input_file),  # <-- Here be a datastamp!
+  file = output_file
+)
+```
+
+So, imagine parking the project above for six months and you forgot some of the circumstances under which these files were created. Or, someone else send you this datastamped data, but you are unclear on the details. The datastamp package attaches some metadata to the R object that might help you remember.
+
+```{r}
+old_data <- readRDS(output_file)
+
+# Who created this?
+info_user(old_data)
+
+# When was this object timestamped?
+info_time(old_data)
+
+# What script was used to generate the results?
+info_script(old_data)
+
+# What raw files went into these results?
+info_files(old_data)
+```
+
+## How does it work?
+
+When an object is stamped, a 'datastamp' attribute is attached to the object.
+
+```{r}
+# Printing atomic vectors report the datastamp attribute.
+(old_data)
+
+# You can explicitly retrieve the stamp with `get_stamp()`
+stamp <- get_stamp(old_data)
+(names(stamp))
+
+# The stamp itself is also a list, so you can retrieve information by name
+stamp$time
+```
+
+If you think some parts of the datastamp aren't necessary to include you can either set a global option or explicitly pass `FALSE` as argument for that part.
+
+```{r}
+# Via argument
+(get_stamp(stamp(1:5, session = FALSE)))
+
+# Via global options
+options("datastamp.time" = FALSE)
+(get_stamp(stamp(1:5)))
+```
+
+## Caveats
+
+In interactive use, the current script can not be guessed with 100% accuracy, but it does a decent job in reporting 'console' or the currently active document in RStudio. This does not necessarily need to be the document where the data is stamped: if you have lengthy runtime on a chunk that contains `stamp()` and you switch document-tabs for example. It should pretty much do the right thing in non-interactive use though.
+
+For the 'origin_files' argument, the stamping checks whether the files exist and reports the path with `normalizePath()`, which I think resolves symbolic links into absolute paths.
