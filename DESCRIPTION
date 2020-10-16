@@ -1,0 +1,17 @@
+Package: datastamp
+Title: Creating logs for data.
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Teun",
+           family = "van den Brand",
+           role = c("aut", "cre"),
+           email = "tahvdbrand@gmail.com",
+           comment = c(ORCID = "0000-0002-9335-7468"))
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+URL: https://github.com/teunbrand/datastamp
+BugReports: https://github.com/teunbrand/datastamp/issues
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
